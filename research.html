@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skift Research — Decision Instrument</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #111; --white: #fff; --gray-50: #f7f7f7; --gray-100: #efefef;
+      --gray-200: #e0e0e0; --gray-300: #c8c8c8; --gray-400: #aaa; --gray-500: #888;
+      --gray-600: #666; --gray-700: #444; --gray-800: #2a2a2a; --accent: #e8c84a;
+      --font-display: 'Georgia', 'Times New Roman', serif;
+      --font-ui: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    }
+    html { font-size: 15px; }
+    body { font-family: var(--font-ui); background: var(--white); color: var(--black); min-height: 100vh; }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 2px solid var(--black); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 48px; }
+    .nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: bold; }
+    .nav-logo span { color: var(--gray-400); font-size: 11px; font-family: var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; margin-left: 8px; font-weight: 400; }
+    .nav-tabs { display: flex; gap: 0; }
+    .nav-tab { padding: 14px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; border-right: 1px solid var(--gray-200); background: var(--gray-50); color: var(--gray-600); text-decoration: none; font-weight: 600; }
+    .nav-tab:hover { background: var(--white); }
+    .nav-tab.active { background: var(--white); color: var(--black); }
+
+    /* App Shell */
+    .app-shell { display: grid; grid-template-columns: 260px 1fr 300px; min-height: calc(100vh - 48px - 44px); }
+
+    /* Left Rail */
+    .left-rail { border-right: 1px solid var(--gray-200); position: sticky; top: 48px; height: calc(100vh - 48px - 44px); overflow-y: auto; background: var(--gray-50); }
+    .rail-section { border-bottom: 1px solid var(--gray-200); padding: 16px; }
+    .rail-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; font-weight: 600; }
+    .signal-item { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--gray-200); }
+    .signal-item:last-child { border-bottom: none; }
+    .signal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--black); margin-top: 5px; flex-shrink: 0; }
+    .signal-dot.weak { background: var(--gray-400); }
+    .signal-text { font-size: 11px; line-height: 1.4; color: var(--gray-700); }
+    .signal-tag { display: inline-block; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; background: var(--black); color: var(--white); padding: 1px 5px; margin-top: 3px; }
+    .framework-card { background: var(--white); border: 1px solid var(--gray-200); padding: 10px; margin-bottom: 8px; }
+    .framework-name { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+    .framework-desc { font-size: 10px; color: var(--gray-600); line-height: 1.45; }
+
+    /* Center */
+    .research-main { padding: 32px 48px; max-width: 680px; }
+    .research-meta { display: flex; gap: 8px; font-size: 11px; color: var(--gray-500); margin-bottom: 16px; flex-wrap: wrap; }
+    .meta-tag { text-transform: uppercase; letter-spacing: 0.06em; font-size: 10px; color: var(--gray-700); font-weight: 600; }
+    .research-badge { background: var(--gray-700); color: var(--white); font-size: 9px; padding: 2px 6px; text-transform: uppercase; }
+    h1.research-title { font-family: var(--font-display); font-size: 28px; line-height: 1.25; margin-bottom: 12px; font-weight: bold; }
+    .research-subtitle { font-size: 16px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.4; }
+    .research-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; padding: 16px; background: var(--gray-50); border: 1px solid var(--gray-200); }
+    .research-detail-item { }
+    .research-detail-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 4px; font-weight: 600; }
+    .research-detail-value { font-size: 13px; font-weight: 600; color: var(--black); }
+
+    .skift-take-hero { background: var(--black); color: var(--white); padding: 16px 20px; margin-bottom: 24px; }
+    .skift-take-hero-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+    .skift-take-hero p { font-size: 14px; line-height: 1.55; color: #e8e8e8; }
+
+    .research-image { width: 100%; aspect-ratio: 16/7; background: var(--gray-200); margin-bottom: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--gray-400); }
+
+    .toc { margin: 24px 0; padding: 16px; border: 1px solid var(--gray-200); background: var(--gray-50); }
+    .toc-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 10px; font-weight: 600; }
+    .toc-item { padding: 6px 0; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; font-size: 12px; }
+    .toc-item:last-child { border-bottom: none; }
+    .toc-chapter { font-weight: 600; }
+    .toc-page { color: var(--gray-400); font-size: 11px; }
+
+    .insight-section { margin: 28px 0; }
+    .insight-section h2 { font-family: var(--font-display); font-size: 18px; font-weight: bold; margin-bottom: 12px; }
+    .insight-section p { font-size: 15px; line-height: 1.7; color: var(--gray-800); margin-bottom: 14px; }
+    .data-callout { margin: 20px 0; padding: 14px 16px; border-left: 3px solid var(--black); background: var(--gray-50); }
+    .data-callout-number { font-size: 28px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .data-callout-desc { font-size: 12px; color: var(--gray-700); line-height: 1.45; }
+
+    .chart-placeholder { width: 100%; height: 280px; background: var(--gray-100); border: 1px solid var(--gray-200); margin: 20px 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--gray-400); }
+
+    .methodology { margin: 28px 0; padding: 16px; border: 1px solid var(--gray-200); background: var(--gray-50); }
+    .methodology-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 8px; font-weight: 600; }
+    .methodology p { font-size: 12px; color: var(--gray-700); line-height: 1.55; }
+
+    /* Right Rail */
+    .right-rail { border-left: 1px solid var(--gray-200); position: sticky; top: 48px; height: calc(100vh - 48px - 44px); overflow-y: auto; background: var(--white); }
+    .impact-map { padding: 16px; border-bottom: 1px solid var(--gray-200); }
+    .impact-map-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; font-weight: 600; }
+    .impact-map-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+    .impact-grid { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .impact-grid th { padding: 5px 6px; text-align: center; font-size: 9px; text-transform: uppercase; color: var(--gray-400); font-weight: 600; border-bottom: 1px solid var(--gray-200); }
+    .impact-grid th:first-child { text-align: left; }
+    .impact-grid td { padding: 5px 6px; border-bottom: 1px solid var(--gray-100); text-align: center; }
+    .impact-grid td:first-child { text-align: left; font-size: 10px; color: var(--gray-700); font-weight: 600; padding-left: 0; }
+    .impact-cell { width: 18px; height: 18px; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; }
+    .impact-cell.high { background: var(--black); color: var(--white); }
+    .impact-cell.medium { background: var(--gray-300); color: var(--gray-700); }
+    .impact-cell.low { background: var(--gray-100); color: var(--gray-400); }
+
+    .intelligence-panel { padding: 16px; border-bottom: 1px solid var(--gray-200); }
+    .intelligence-panel-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; font-weight: 600; }
+    .intel-action { display: block; width: 100%; padding: 9px 12px; margin-bottom: 6px; text-align: left; background: var(--gray-50); border: 1px solid var(--gray-200); font-size: 11px; color: var(--gray-700); cursor: pointer; line-height: 1.4; transition: all 0.15s; }
+    .intel-action:hover { background: var(--black); color: var(--white); }
+
+    .source-tracking { padding: 16px; }
+    .source-tracking-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; font-weight: 600; }
+    .source-item { display: flex; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--gray-100); }
+    .source-item:last-child { border-bottom: none; }
+    .source-type-badge { font-size: 8px; padding: 2px 5px; flex-shrink: 0; text-transform: uppercase; font-weight: 700; margin-top: 1px; }
+    .source-type-badge.editorial { background: var(--gray-200); color: var(--gray-700); }
+    .source-type-badge.research { background: var(--gray-700); color: var(--white); }
+    .source-type-badge.events { background: var(--gray-500); color: var(--white); }
+    .source-title { font-size: 11px; color: var(--gray-700); line-height: 1.35; }
+    .source-meta { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+
+    /* App Bar */
+    .app-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 44px; background: var(--black); color: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 200; }
+    .app-bar-context { font-size: 11px; color: var(--gray-400); display: flex; gap: 16px; }
+    .app-bar-context strong { color: var(--white); font-size: 11px; }
+    .app-bar-actions { display: flex; gap: 8px; }
+    .app-bar-btn { background: none; border: 1px solid #444; color: var(--gray-300); font-size: 10px; padding: 4px 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.06em; }
+    .app-bar-btn:hover { border-color: var(--white); color: var(--white); }
+    .app-bar-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--black); font-weight: 700; }
+
+    @media (max-width: 960px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .left-rail, .right-rail { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">SKIFT <span>Intelligence</span></div>
+  <div class="nav-tabs">
+    <a href="index.html" class="nav-tab">Article</a>
+    <a href="event.html" class="nav-tab">Event</a>
+    <a href="research.html" class="nav-tab active">Research</a>
+  </div>
+</nav>
+
+<div class="app-shell">
+
+  <aside class="left-rail">
+    <div class="rail-section">
+      <div class="rail-label">Decision Lens</div>
+      <select id="lens-selector" style="width: 100%; padding: 8px 10px; font-size: 11px; background: var(--white); border: 1px solid var(--gray-300); color: var(--gray-700); cursor: pointer; font-weight: 600;">
+        <option value="hotel-revenue" selected>Hotel Revenue / Commercial</option>
+        <option value="strategy">Strategy / Corp Dev</option>
+        <option value="investor">Investor / Analyst</option>
+      </select>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Why This Research Matters</div>
+      <div class="signal-item"><div class="signal-dot strong"></div><div><div class="signal-text">Income-stratified RevPAR forecasts through Q4 — the first report to separate upper-upscale from mid-scale with actual guidance numbers.</div><span class="signal-tag">Forecasting</span></div></div>
+      <div class="signal-item"><div class="signal-dot strong"></div><div><div class="signal-text">Segment-level analysis shows which traveler cohorts are driving bookings vs. pulling back — critical for pricing and marketing allocation.</div><span class="signal-tag">Segmentation</span></div></div>
+      <div class="signal-item"><div class="signal-dot weak"></div><div><div class="signal-text">Longitudinal data back to 2019 lets you separate structural shifts from cyclical noise.</div><span class="signal-tag">Trend Analysis</span></div></div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Key Frameworks</div>
+      <div class="framework-card">
+        <div class="framework-name">Income Segmentation Model</div>
+        <div class="framework-desc">Five household income tiers mapped to travel spending behaviors, booking windows, and price sensitivity.</div>
+      </div>
+      <div class="framework-card">
+        <div class="framework-name">Vertical Demand Drivers</div>
+        <div class="framework-desc">What drives bookings in each travel vertical — lodging, airlines, car rental, attractions — and how those drivers vary by income segment.</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="research-main">
+    <div class="research-meta">
+      <span class="meta-tag">Skift Research</span>
+      <span style="color: var(--gray-300);">·</span>
+      <span class="research-badge">Research</span>
+      <span style="color: var(--gray-300);">·</span>
+      <span>April 2026 · 48 pages</span>
+    </div>
+
+    <h1 class="research-title">2026 State of Travel Consumer Spending</h1>
+    <p class="research-subtitle">Income-stratified demand analysis across 12 travel verticals — who's spending, where, and why it's shifting.</p>
+
+    <div class="research-details">
+      <div class="research-detail-item">
+        <div class="research-detail-label">Published</div>
+        <div class="research-detail-value">April 2026</div>
+      </div>
+      <div class="research-detail-item">
+        <div class="research-detail-label">Pages</div>
+        <div class="research-detail-value">48</div>
+      </div>
+      <div class="research-detail-item">
+        <div class="research-detail-label">Data Sources</div>
+        <div class="research-detail-value">4 primary</div>
+      </div>
+      <div class="research-detail-item">
+        <div class="research-detail-label">Forecast Horizon</div>
+        <div class="research-detail-value">Through Q4 2026</div>
+      </div>
+    </div>
+
+    <div class="skift-take-hero">
+      <div class="skift-take-hero-label">Skift Take</div>
+      <p>The K-shaped recovery everyone talked about in 2021 has hardened into a K-shaped market structure. High-income households ($150K+) are spending 18% more on travel than 2019; households under $75K are spending 12% less. This isn't cyclical — it's a reconfiguration of who travels, where they go, and what they're willing to pay. If your revenue model assumes broad-market volume growth, this report will force a rewrite.</p>
+    </div>
+
+    <div class="research-image">[ Report Cover Image — Placeholder ]</div>
+
+    <div class="toc">
+      <div class="toc-label">Table of Contents</div>
+      <div class="toc-item"><div class="toc-chapter">Executive Summary</div><div class="toc-page">p. 3</div></div>
+      <div class="toc-item"><div class="toc-chapter">Methodology & Data Sources</div><div class="toc-page">p. 7</div></div>
+      <div class="toc-item"><div class="toc-chapter">Chapter 1: The Bifurcated Traveler</div><div class="toc-page">p. 9</div></div>
+      <div class="toc-item"><div class="toc-chapter">Chapter 2: Lodging — Segment-Level RevPAR Forecasts</div><div class="toc-page">p. 15</div></div>
+      <div class="toc-item"><div class="toc-chapter">Chapter 3: Airlines — Premium Cabin vs Economy</div><div class="toc-page">p. 22</div></div>
+      <div class="toc-item"><div class="toc-chapter">Chapter 4: Destinations — Primary vs Secondary Markets</div><div class="toc-page">p. 28</div></div>
+      <div class="toc-item"><div class="toc-chapter">Chapter 5: Implications for Strategy</div><div class="toc-page">p. 38</div></div>
+      <div class="toc-item"><div class="toc-chapter">Appendix: Full Dataset & Methodology</div><div class="toc-page">p. 42</div></div>
+    </div>
+
+    <div class="insight-section">
+      <h2>Executive Summary</h2>
+      <p>Travel spending in 2026 is bifurcating along income lines faster than any time since Skift Research began tracking consumer behavior in 2012. High-income households are not just traveling more — they're traveling differently, with longer booking windows, higher willingness to pay, and stronger brand loyalty.</p>
+
+      <div class="data-callout">
+        <div class="data-callout-number">+18%</div>
+        <div class="data-callout-desc">Travel spending growth among households earning $150K+ vs 2019 baseline — driven by international trips, premium lodging, and experiential add-ons.</div>
+      </div>
+
+      <div class="data-callout">
+        <div class="data-callout-number">-12%</div>
+        <div class="data-callout-desc">Travel spending decline among households under $75K vs 2019 — shorter trips, budget lodging concentration, and deferred big-ticket purchases.</div>
+      </div>
+
+      <p>The wedge between these cohorts isn't narrowing. Inflation-adjusted lodging costs are up 23% since 2019, while median household income growth has lagged at 11%. For lower-income travelers, the affordability gap isn't temporary — it's structural.</p>
+
+      <div class="chart-placeholder">[ Chart: Travel Spending by Income Quintile, 2019–2026 ]</div>
+
+      <p>This report provides segment-level forecasts for lodging, airlines, car rental, cruises, and attractions through Q4 2026. We've stratified all data by five household income tiers, allowing revenue managers to model demand scenarios based on their actual customer mix.</p>
+    </div>
+
+    <div class="insight-section">
+      <h2>Key Finding: Lodging Segment Divergence</h2>
+      <p>Upper-upscale and luxury hotels are reporting RevPAR growth of 8–12% year-over-year. Mid-scale and economy properties are down 3–7%. The gap is widening as high-income travelers trade up and budget travelers reduce trip frequency.</p>
+
+      <div class="chart-placeholder">[ Chart: RevPAR Growth by Lodging Segment, Q1 2024 – Q1 2026 ]</div>
+
+      <p>Our forecast models three scenarios through Q4 2026 based on macroeconomic assumptions. In all three, upper-upscale maintains positive growth. Mid-scale returns to flat or positive growth only in the optimistic scenario where fuel prices drop below $4/gallon and the Federal Reserve cuts rates twice.</p>
+    </div>
+
+    <div class="methodology">
+      <div class="methodology-label">Methodology</div>
+      <p>This report synthesizes data from four primary sources: Bank of America aggregated spending data (anonymized, 12M+ cardholders), Skift proprietary surveys (n=8,200 U.S. travelers, fielded Feb–Mar 2026), STR lodging performance data, and Airlines for America passenger metrics. Income stratification uses IRS-adjusted household income bands. Full methodology and sample composition details are available in the appendix.</p>
+    </div>
+  </main>
+
+  <aside class="right-rail">
+    <div class="impact-map">
+      <div class="impact-map-label">Decision Impact Map</div>
+      <div class="impact-map-title">Strategic Value by Role</div>
+      <table class="impact-grid">
+        <thead><tr><th></th><th>Now</th><th>Q3</th><th>Q4</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue Mgmt</td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td></tr>
+          <tr><td>Strategy</td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td></tr>
+          <tr><td>Marketing</td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell medium">●</div></td></tr>
+          <tr><td>Finance / FP&A</td><td><div class="impact-cell medium">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="intelligence-panel">
+      <div class="intelligence-panel-label">Analyze with Intelligence</div>
+      <button class="intel-action">How do these forecasts compare to our internal projections?</button>
+      <button class="intel-action">Build a briefing: implications for our Q3 pricing strategy</button>
+      <button class="intel-action">Which segments should we focus marketing spend on?</button>
+      <button class="intel-action">Compare this data with our customer mix — are we exposed?</button>
+    </div>
+
+    <div class="source-tracking">
+      <div class="source-tracking-label">Related Coverage</div>
+      <div class="source-item">
+        <span class="source-type-badge editorial">Daily</span>
+        <div>
+          <a href="index.html" class="source-title" style="text-decoration:none; color:var(--gray-700);">'Desperate' to Travel, but Rising Costs Point to 'Uneven' Summer</a>
+          <div class="source-meta">Skift Daily · May 16, 2026</div>
+        </div>
+      </div>
+      <div class="source-item">
+        <span class="source-type-badge events">Live</span>
+        <div>
+          <a href="event.html" class="source-title" style="text-decoration:none; color:var(--gray-700);">Skift Global Forum 2026: The Bifurcated Traveler</a>
+          <div class="source-meta">Sep 23–24, 2026 · New York</div>
+        </div>
+      </div>
+      <div class="source-item">
+        <span class="source-type-badge research">Research</span>
+        <div>
+          <a href="#" class="source-title" style="text-decoration:none; color:var(--gray-700);">2025 State of Travel Consumer Spending</a>
+          <div class="source-meta">Skift Research · April 2025</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<div class="app-bar">
+  <div class="app-bar-context">
+    <span>📊 <strong>2026 Consumer Spending Report</strong></span>
+    <span>48 pages · Income-stratified forecasts</span>
+  </div>
+  <div class="app-bar-actions">
+    <button class="app-bar-btn">Open in Intelligence</button>
+    <button class="app-bar-btn">Download PDF</button>
+    <button class="app-bar-btn primary">Subscribe to Research →</button>
+  </div>
+</div>
+
+</body>
+</html>

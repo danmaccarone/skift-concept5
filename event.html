@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skift Event — Decision Instrument</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #111; --white: #fff; --gray-50: #f7f7f7; --gray-100: #efefef;
+      --gray-200: #e0e0e0; --gray-300: #c8c8c8; --gray-400: #aaa; --gray-500: #888;
+      --gray-600: #666; --gray-700: #444; --gray-800: #2a2a2a; --accent: #e8c84a;
+      --font-display: 'Georgia', 'Times New Roman', serif;
+      --font-ui: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    }
+    html { font-size: 15px; }
+    body { font-family: var(--font-ui); background: var(--white); color: var(--black); min-height: 100vh; }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 2px solid var(--black); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 48px; }
+    .nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: bold; }
+    .nav-logo span { color: var(--gray-400); font-size: 11px; font-family: var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; margin-left: 8px; font-weight: 400; }
+    .nav-tabs { display: flex; gap: 0; }
+    .nav-tab { padding: 14px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; border-right: 1px solid var(--gray-200); background: var(--gray-50); color: var(--gray-600); text-decoration: none; font-weight: 600; }
+    .nav-tab:hover { background: var(--white); }
+    .nav-tab.active { background: var(--white); color: var(--black); }
+
+    /* App Shell */
+    .app-shell { display: grid; grid-template-columns: 260px 1fr 300px; min-height: calc(100vh - 48px - 44px); }
+
+    /* Left Rail */
+    .left-rail { border-right: 1px solid var(--gray-200); position: sticky; top: 48px; height: calc(100vh - 48px - 44px); overflow-y: auto; background: var(--gray-50); }
+    .rail-section { border-bottom: 1px solid var(--gray-200); padding: 16px; }
+    .rail-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; font-weight: 600; }
+    .signal-item { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--gray-200); }
+    .signal-item:last-child { border-bottom: none; }
+    .signal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--black); margin-top: 5px; flex-shrink: 0; }
+    .signal-dot.weak { background: var(--gray-400); }
+    .signal-text { font-size: 11px; line-height: 1.4; color: var(--gray-700); }
+    .signal-tag { display: inline-block; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; background: var(--black); color: var(--white); padding: 1px 5px; margin-top: 3px; }
+    .framework-card { background: var(--white); border: 1px solid var(--gray-200); padding: 10px; margin-bottom: 8px; }
+    .framework-name { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+    .framework-desc { font-size: 10px; color: var(--gray-600); line-height: 1.45; }
+
+    /* Center */
+    .event-main { padding: 32px 48px; max-width: 680px; }
+    .event-meta { display: flex; gap: 8px; font-size: 11px; color: var(--gray-500); margin-bottom: 16px; flex-wrap: wrap; }
+    .meta-tag { text-transform: uppercase; letter-spacing: 0.06em; font-size: 10px; color: var(--gray-700); font-weight: 600; }
+    .live-badge { background: var(--gray-500); color: var(--white); font-size: 9px; padding: 2px 6px; text-transform: uppercase; }
+    h1.event-title { font-family: var(--font-display); font-size: 28px; line-height: 1.25; margin-bottom: 12px; font-weight: bold; }
+    .event-subtitle { font-size: 16px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.4; }
+    .event-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; padding: 16px; background: var(--gray-50); border: 1px solid var(--gray-200); }
+    .event-detail-item { }
+    .event-detail-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 4px; font-weight: 600; }
+    .event-detail-value { font-size: 13px; font-weight: 600; color: var(--black); }
+
+    .skift-take-hero { background: var(--black); color: var(--white); padding: 16px 20px; margin-bottom: 24px; }
+    .skift-take-hero-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+    .skift-take-hero p { font-size: 14px; line-height: 1.55; color: #e8e8e8; }
+
+    .event-image { width: 100%; aspect-ratio: 16/7; background: var(--gray-200); margin-bottom: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--gray-400); }
+
+    .session-section { margin: 28px 0; }
+    .session-section h2 { font-family: var(--font-display); font-size: 18px; font-weight: bold; margin-bottom: 16px; }
+    .session-card { border: 1px solid var(--gray-200); padding: 14px 16px; margin-bottom: 12px; }
+    .session-time { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 6px; font-weight: 600; }
+    .session-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .session-speakers { font-size: 12px; color: var(--gray-600); margin-bottom: 8px; }
+    .session-desc { font-size: 12px; color: var(--gray-700); line-height: 1.5; }
+    .session-tag { display: inline-block; font-size: 9px; background: var(--gray-200); color: var(--gray-700); padding: 2px 6px; margin-top: 6px; margin-right: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .speaker-section { margin: 28px 0; }
+    .speaker-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .speaker-card { border: 1px solid var(--gray-200); padding: 12px; display: flex; gap: 12px; }
+    .speaker-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--gray-300); flex-shrink: 0; }
+    .speaker-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .speaker-title { font-size: 11px; color: var(--gray-600); line-height: 1.35; }
+
+    /* Right Rail */
+    .right-rail { border-left: 1px solid var(--gray-200); position: sticky; top: 48px; height: calc(100vh - 48px - 44px); overflow-y: auto; background: var(--white); }
+    .impact-map { padding: 16px; border-bottom: 1px solid var(--gray-200); }
+    .impact-map-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; font-weight: 600; }
+    .impact-map-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+    .impact-grid { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .impact-grid th { padding: 5px 6px; text-align: center; font-size: 9px; text-transform: uppercase; color: var(--gray-400); font-weight: 600; border-bottom: 1px solid var(--gray-200); }
+    .impact-grid th:first-child { text-align: left; }
+    .impact-grid td { padding: 5px 6px; border-bottom: 1px solid var(--gray-100); text-align: center; }
+    .impact-grid td:first-child { text-align: left; font-size: 10px; color: var(--gray-700); font-weight: 600; padding-left: 0; }
+    .impact-cell { width: 18px; height: 18px; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; }
+    .impact-cell.high { background: var(--black); color: var(--white); }
+    .impact-cell.medium { background: var(--gray-300); color: var(--gray-700); }
+    .impact-cell.low { background: var(--gray-100); color: var(--gray-400); }
+
+    .intelligence-panel { padding: 16px; border-bottom: 1px solid var(--gray-200); }
+    .intelligence-panel-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; font-weight: 600; }
+    .intel-action { display: block; width: 100%; padding: 9px 12px; margin-bottom: 6px; text-align: left; background: var(--gray-50); border: 1px solid var(--gray-200); font-size: 11px; color: var(--gray-700); cursor: pointer; line-height: 1.4; transition: all 0.15s; }
+    .intel-action:hover { background: var(--black); color: var(--white); }
+
+    .source-tracking { padding: 16px; }
+    .source-tracking-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; font-weight: 600; }
+    .source-item { display: flex; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--gray-100); }
+    .source-item:last-child { border-bottom: none; }
+    .source-type-badge { font-size: 8px; padding: 2px 5px; flex-shrink: 0; text-transform: uppercase; font-weight: 700; margin-top: 1px; }
+    .source-type-badge.editorial { background: var(--gray-200); color: var(--gray-700); }
+    .source-type-badge.research { background: var(--gray-700); color: var(--white); }
+    .source-type-badge.events { background: var(--gray-500); color: var(--white); }
+    .source-title { font-size: 11px; color: var(--gray-700); line-height: 1.35; }
+    .source-meta { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+
+    /* App Bar */
+    .app-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 44px; background: var(--black); color: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 200; }
+    .app-bar-context { font-size: 11px; color: var(--gray-400); display: flex; gap: 16px; }
+    .app-bar-context strong { color: var(--white); font-size: 11px; }
+    .app-bar-actions { display: flex; gap: 8px; }
+    .app-bar-btn { background: none; border: 1px solid #444; color: var(--gray-300); font-size: 10px; padding: 4px 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.06em; }
+    .app-bar-btn:hover { border-color: var(--white); color: var(--white); }
+    .app-bar-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--black); font-weight: 700; }
+
+    @media (max-width: 960px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .left-rail, .right-rail { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">SKIFT <span>Intelligence</span></div>
+  <div class="nav-tabs">
+    <a href="index.html" class="nav-tab">Article</a>
+    <a href="event.html" class="nav-tab active">Event</a>
+    <a href="research.html" class="nav-tab">Research</a>
+  </div>
+</nav>
+
+<div class="app-shell">
+
+  <aside class="left-rail">
+    <div class="rail-section">
+      <div class="rail-label">Decision Lens</div>
+      <select id="lens-selector" style="width: 100%; padding: 8px 10px; font-size: 11px; background: var(--white); border: 1px solid var(--gray-300); color: var(--gray-700); cursor: pointer; font-weight: 600;">
+        <option value="hotel-revenue" selected>Hotel Revenue / Commercial</option>
+        <option value="strategy">Strategy / Corp Dev</option>
+        <option value="investor">Investor / Analyst</option>
+      </select>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Why This Event Matters</div>
+      <div class="signal-item"><div class="signal-dot strong"></div><div><div class="signal-text">Direct access to hotel CEOs debating bifurcated demand — calibrate your own summer strategy against their public positions.</div><span class="signal-tag">Executive Insight</span></div></div>
+      <div class="signal-item"><div class="signal-dot strong"></div><div><div class="signal-text">Distribution panel features Booking.com, Expedia, and Google Travel — AI search implications will surface here first.</div><span class="signal-tag">Channel Strategy</span></div></div>
+      <div class="signal-item"><div class="signal-dot weak"></div><div><div class="signal-text">Secondary market DMO track provides positioning case studies for destination dupe opportunity.</div><span class="signal-tag">Market Entry</span></div></div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Key Themes</div>
+      <div class="framework-card">
+        <div class="framework-name">The Bifurcated Traveler</div>
+        <div class="framework-desc">How K-shaped economics are creating two distinct travel markets with different pricing power, distribution needs, and brand expectations.</div>
+      </div>
+      <div class="framework-card">
+        <div class="framework-name">AI-Mediated Discovery</div>
+        <div class="framework-desc">As 29% of bookings shift to AI tools, which brands retain customer relationships vs. becoming commoditized supply.</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="event-main">
+    <div class="event-meta">
+      <span class="meta-tag">Skift Live</span>
+      <span style="color: var(--gray-300);">·</span>
+      <span class="live-badge">Event</span>
+      <span style="color: var(--gray-300);">·</span>
+      <span>Sep 23–24, 2026</span>
+    </div>
+
+    <h1 class="event-title">Skift Global Forum 2026</h1>
+    <p class="event-subtitle">The travel industry's premier leadership summit returns to New York City with this year's theme: navigating the bifurcated traveler.</p>
+
+    <div class="event-details">
+      <div class="event-detail-item">
+        <div class="event-detail-label">Date</div>
+        <div class="event-detail-value">Sep 23–24, 2026</div>
+      </div>
+      <div class="event-detail-item">
+        <div class="event-detail-label">Location</div>
+        <div class="event-detail-value">New York City</div>
+      </div>
+      <div class="event-detail-item">
+        <div class="event-detail-label">Expected Attendance</div>
+        <div class="event-detail-value">800+ executives</div>
+      </div>
+    </div>
+
+    <div class="skift-take-hero">
+      <div class="skift-take-hero-label">Skift Take</div>
+      <p>This year's Global Forum arrives at an inflection point: K-shaped demand is no longer a forecast, it's a structural reality reshaping pricing, distribution, and brand strategy across every travel vertical. The executives on stage aren't theorizing — they're reporting what they're seeing in their own P&Ls. If you're calibrating your 2027 plans, this is where the data gets validated or challenged in real time.</p>
+    </div>
+
+    <div class="event-image">[ Event Image — Placeholder ]</div>
+
+    <div class="session-section">
+      <h2>Featured Sessions</h2>
+
+      <div class="session-card">
+        <div class="session-time">Day 1 · 9:30 AM – 10:15 AM</div>
+        <div class="session-title">Keynote: The Two-Speed Travel Market</div>
+        <div class="session-speakers">Chris Nassetta, President & CEO, Hilton</div>
+        <div class="session-desc">Hilton's CEO opens the forum with hard data on how bifurcated demand is playing out across Hilton's 7,000+ properties — which segments are outperforming, where pricing power lives, and what it means for capital allocation through 2027.</div>
+        <span class="session-tag">Strategy</span>
+        <span class="session-tag">Demand</span>
+      </div>
+
+      <div class="session-card">
+        <div class="session-time">Day 1 · 11:00 AM – 11:45 AM</div>
+        <div class="session-title">Panel: AI Search Is Rewriting Distribution</div>
+        <div class="session-speakers">Glenn Fogel (Booking.com) · Peter Kern (Expedia) · Oliver Heckmann (Google Travel)</div>
+        <div class="session-desc">The three executives controlling most of online travel distribution debate how AI-mediated booking is shifting from theory to material revenue impact — and which brands are positioned to win.</div>
+        <span class="session-tag">Distribution</span>
+        <span class="session-tag">Technology</span>
+      </div>
+
+      <div class="session-card">
+        <div class="session-time">Day 1 · 2:00 PM – 2:45 PM</div>
+        <div class="session-title">Debate: Is Loyalty Dead or Just Evolving?</div>
+        <div class="session-speakers">Anthony Capuano (Marriott) · Stephanie Linnartz (Under Armour, fmr. Marriott President)</div>
+        <div class="session-desc">Marriott's CEO defends loyalty program economics while his former President — now leading a brand outside travel — argues the model is unsustainable in a two-speed market.</div>
+        <span class="session-tag">Loyalty</span>
+        <span class="session-tag">Customer</span>
+      </div>
+
+      <div class="session-card">
+        <div class="session-time">Day 2 · 10:00 AM – 10:45 AM</div>
+        <div class="session-title">Workshop: Destination Dupes — Opportunity or Threat?</div>
+        <div class="session-speakers">DMO leaders from Philadelphia, Fort Lauderdale, Porto</div>
+        <div class="session-desc">Secondary market destinations that have captured 40–80% search growth share their playbook — and primary destinations respond to the competitive pressure.</div>
+        <span class="session-tag">Destinations</span>
+        <span class="session-tag">Marketing</span>
+      </div>
+    </div>
+
+    <div class="speaker-section">
+      <h2>Featured Speakers</h2>
+      <div class="speaker-grid">
+        <div class="speaker-card">
+          <div class="speaker-avatar"></div>
+          <div>
+            <div class="speaker-name">Chris Nassetta</div>
+            <div class="speaker-title">President & CEO, Hilton</div>
+          </div>
+        </div>
+        <div class="speaker-card">
+          <div class="speaker-avatar"></div>
+          <div>
+            <div class="speaker-name">Anthony Capuano</div>
+            <div class="speaker-title">President & CEO, Marriott International</div>
+          </div>
+        </div>
+        <div class="speaker-card">
+          <div class="speaker-avatar"></div>
+          <div>
+            <div class="speaker-name">Glenn Fogel</div>
+            <div class="speaker-title">CEO, Booking Holdings</div>
+          </div>
+        </div>
+        <div class="speaker-card">
+          <div class="speaker-avatar"></div>
+          <div>
+            <div class="speaker-name">Peter Kern</div>
+            <div class="speaker-title">CEO, Expedia Group</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="right-rail">
+    <div class="impact-map">
+      <div class="impact-map-label">Decision Impact Map</div>
+      <div class="impact-map-title">Strategic Value by Role</div>
+      <table class="impact-grid">
+        <thead><tr><th></th><th>Now</th><th>Q4</th><th>2027</th></tr></thead>
+        <tbody>
+          <tr><td>Strategy</td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td></tr>
+          <tr><td>Revenue Mgmt</td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell medium">●</div></td></tr>
+          <tr><td>Distribution</td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td></tr>
+          <tr><td>Marketing</td><td><div class="impact-cell medium">●</div></td><td><div class="impact-cell high">●</div></td><td><div class="impact-cell high">●</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="intelligence-panel">
+      <div class="intelligence-panel-label">Prep with Intelligence</div>
+      <button class="intel-action">Which sessions matter most for my summer 2026 strategy?</button>
+      <button class="intel-action">Brief me on Nassetta vs Capuano: what's the real disagreement?</button>
+      <button class="intel-action">Build an event briefing: key questions to ask speakers</button>
+      <button class="intel-action">Compare this agenda with SGF 2025 — what shifted?</button>
+    </div>
+
+    <div class="source-tracking">
+      <div class="source-tracking-label">Related Coverage</div>
+      <div class="source-item">
+        <span class="source-type-badge editorial">Daily</span>
+        <div>
+          <a href="index.html" class="source-title" style="text-decoration:none; color:var(--gray-700);">'Desperate' to Travel, but Rising Costs Point to 'Uneven' Summer</a>
+          <div class="source-meta">Skift Daily · May 16, 2026</div>
+        </div>
+      </div>
+      <div class="source-item">
+        <span class="source-type-badge research">Research</span>
+        <div>
+          <a href="research.html" class="source-title" style="text-decoration:none; color:var(--gray-700);">2026 State of Travel Consumer Spending</a>
+          <div class="source-meta">Skift Research · April 2026</div>
+        </div>
+      </div>
+      <div class="source-item">
+        <span class="source-type-badge events">Live</span>
+        <div>
+          <a href="#" class="source-title" style="text-decoration:none; color:var(--gray-700);">Skift Global Forum 2025 Transcript Archive</a>
+          <div class="source-meta">Oct 2025 · Full recordings</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<div class="app-bar">
+  <div class="app-bar-context">
+    <span>🎤 <strong>Skift Global Forum 2026</strong></span>
+    <span>Sep 23–24 · New York City</span>
+  </div>
+  <div class="app-bar-actions">
+    <button class="app-bar-btn">Open in Intelligence</button>
+    <button class="app-bar-btn">Add to Event Briefing</button>
+    <button class="app-bar-btn primary">Register →</button>
+  </div>
+</div>
+
+</body>
+</html>
